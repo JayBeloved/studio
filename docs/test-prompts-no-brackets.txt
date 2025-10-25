@@ -1,0 +1,87 @@
+# PromptBase Test Prompts: No Square Brackets (Ready to Upload)
+
+These are the EXACT test prompts to use in PromptBase. NO square brackets - just plain text users would fill in.
+
+---
+
+## TEST PROMPT 1: STORYTELLING
+
+```
+FRAMEWORK: BAB
+
+LENGTH: 350 words
+
+TONE: Vulnerable
+
+YOUR STORY: Worked 12 hours today on research projects despite personal challenges. Personal issues were distracting but beyond my control. I chose to focus on what I can control: delivering results for researchers and students depending on me. Stayed focused, got work done, clients satisfied.
+```
+
+---
+
+## TEST PROMPT 2: AUTHORITY
+
+```
+FRAMEWORK: Thesis
+
+LENGTH: 400 words
+
+TONE: Provocative
+
+YOUR INSIGHT: Most people think posting daily on LinkedIn is key to success. Everyone says you need consistency. The algorithm rewards frequency. But I've noticed the highest-earning creators don't post daily at all. They post 2-3 times per week with deep, thoughtful content. Their engagement per post is 10x higher than daily posters. Quality beats frequency every time.
+```
+
+---
+
+## TEST PROMPT 3: RELEVANCE
+
+```
+FRAMEWORK: Myth
+
+LENGTH: 300 words
+
+TONE: Analytical
+
+TOPIC: Everyone believes you need 10K followers on LinkedIn to be credible. The logic: big numbers equal authority. But I've been tracking who actually makes money on LinkedIn. The highest earners have 500-5K followers. They're getting client inquiries while 50K-follower accounts are getting nothing. Why? Because 500 engaged followers beat 50K passive scrollers. Credibility comes from transformation, not vanity metrics.
+```
+
+---
+
+## TEST PROMPT 4: INVITATION
+
+```
+FRAMEWORK: Celebrate
+
+LENGTH: 250 words
+
+TONE: Genuine
+
+FOCUS: I've noticed something on LinkedIn. Posts about wins get likes. Posts about struggles get comments. People saying "me too" and "thank you for saying this." Everyone shows the highlight reel. But when someone shares the struggle, the failure, the part where they didn't know what they were doing? That person gives everyone watching permission to be human. I see people doing this and it's brave. I want to celebrate them.
+```
+
+---
+
+## INSTRUCTIONS FOR PROMPTBASE UPLOAD
+
+For each product:
+
+1. Copy entire prompt from: storytelling-prompt-fixed.txt (or authority/relevance/invitation)
+2. Paste into PromptBase "Prompt Template" field
+3. Then paste corresponding test prompt above into ChatGPT
+4. Copy the generated response as your "Example Output"
+5. Submit
+
+The test prompts have NO square brackets—they're ready to copy-paste into ChatGPT exactly as shown above.
+
+---
+
+## VERIFICATION CHECKLIST
+
+Before uploading each prompt:
+
+- [ ] NO square brackets anywhere in the prompt text
+- [ ] Test prompt has been run in ChatGPT
+- [ ] Output generated successfully
+- [ ] Example output demonstrates the framework
+- [ ] Description copied and is under 500 characters
+- [ ] Tags are relevant to the prompt type
+- [ ] ChatGPT share link created (if PromptBase requires it)

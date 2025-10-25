@@ -1,56 +1,106 @@
 'use server';
 
+import { ai } from '@/ai/genkit';
+import {
+  GenerateSariPostInputSchema,
+  GenerateSariPostOutputSchema,
+  GenerateSariPostInput,
+  GenerateSariPostOutput
+} from './sari-post.types';
+import { PROMPT_TEMPLATES, CONTENT_FIELD_MAP, VoiceType } from './prompts/prompt-templates';
+
 /**
- * @fileOverview A LinkedIn post generator based on the SARI framework.
- *
- * - generateSariPost - A function that generates a LinkedIn post based on the SARI framework.
- * - GenerateSariPostInput - The input type for the generateSariPost function.
- * - GenerateSariPostOutput - The return type for the generateSariPost function.
+ * Injects user input into the specific prompt template
  */
+function buildPromptWithUserInput(input: GenerateSariPostInput): string {
+  const { voiceType, framework, wordCount, tone, content } = input;
+  
+  let prompt = PROMPT_TEMPLATES[voiceType as VoiceType];
+  const contentField = CONTENT_FIELD_MAP[voiceType as VoiceType];
+  
+  const userInputSection = `
+FRAMEWORK: ${framework}
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+LENGTH: ${wordCount} words
 
-const GenerateSariPostInputSchema = z.object({
-  storytelling: z.boolean().describe('Whether to include a storytelling element.'),
-  authority: z.boolean().describe('Whether to include an authority element.'),
-  relevance: z.boolean().describe('Whether to include a relevance element.'),
-  invitation: z.boolean().describe('Whether to include an invitation element.'),
-});
-export type GenerateSariPostInput = z.infer<typeof GenerateSariPostInputSchema>;
+TONE: ${tone}
 
-const GenerateSariPostOutputSchema = z.object({
-  post: z.string().describe('The generated LinkedIn post.'),
-});
-export type GenerateSariPostOutput = z.infer<typeof GenerateSariPostOutputSchema>;
-
-export async function generateSariPost(input: GenerateSariPostInput): Promise<GenerateSariPostOutput> {
-  return generateSariPostFlow(input);
+${contentField}: ${content}
+`.trim();
+  
+  const finalInstructionMarker = `Generate ${voiceType}-driven LinkedIn post now based on user input above.`;
+  
+  prompt = prompt.replace(
+    finalInstructionMarker,
+    `${userInputSection}\n\n---\n\n${finalInstructionMarker}`
+  );
+  
+  return prompt;
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateSariPostPrompt',
-  input: {schema: GenerateSariPostInputSchema},
-  output: {schema: GenerateSariPostOutputSchema},
-  prompt: `You are a LinkedIn expert. Generate a LinkedIn post based on the following SARI framework elements. Only use the SARI elements that are set to true.
+/**
+ * Parses the LLM output into structured format
+ */
+function parseOutputSections(text: string): GenerateSariPostOutput {
+  const sections = {
+    title: '',
+    post: '',
+    hashtags: '',
+    engagementPrediction: '',
+    qualityCheck: '',
+  };
 
-SARI Framework:
-Storytelling: {{{storytelling}}}
-Authority: {{{authority}}}
-Relevance: {{{relevance}}}
-Invitation: {{{invitation}}}
+  const extractBetween = (fullText: string, startMarker: string, endMarker?: string): string => {
+    const start = fullText.indexOf(startMarker);
+    if (start === -1) return '';
+    
+    const contentStart = start + startMarker.length;
+    let end = fullText.length;
+    
+    if (endMarker) {
+      const endPos = fullText.indexOf(endMarker, contentStart);
+      if (endPos !== -1) end = endPos;
+    }
+    
+    return fullText.substring(contentStart, end).trim();
+  };
 
-Post:`, 
-});
+  sections.title = extractBetween(text, 'TITLE', 'POST');
+  sections.post = extractBetween(text, 'POST', 'HASHTAGS');
+  sections.hashtags = extractBetween(text, 'HASHTAGS', 'ENGAGEMENT');
+  sections.engagementPrediction = extractBetween(text, 'ENGAGEMENT PREDICTION', 'QUALITY');
+  sections.qualityCheck = extractBetween(text, 'QUALITY CHECK');
 
+  return sections;
+}
+
+/**
+ * Main flow using Gemini 2.5 Flash with the complete, templated prompt
+ */
 const generateSariPostFlow = ai.defineFlow(
   {
     name: 'generateSariPostFlow',
     inputSchema: GenerateSariPostInputSchema,
     outputSchema: GenerateSariPostOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input: GenerateSariPostInput) => {
+    const fullPrompt = buildPromptWithUserInput(input);
+    
+    // FIX #1: Use correct model name matching your genkit config
+    const result = await ai.generate({
+      model: 'googleai/gemini-2.5-flash',  // CHANGED: was 'gemini-2.5-flash-latest'
+      prompt: fullPrompt,
+      config: {
+        temperature: 0.7,
+        maxOutputTokens: 2048,
+      },
+    });
+    
+    const output = result.text;
+    return parseOutputSections(output);
   }
 );
+
+export async function generateSariPost(input: GenerateSariPostInput): Promise<GenerateSariPostOutput> {
+  return generateSariPostFlow(input);
+}

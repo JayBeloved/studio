@@ -1,30 +1,8 @@
 'use server';
 
-/**
- * @fileOverview A flow to refine a generated LinkedIn post with additional instructions.
- *
- * - refineGeneratedPost - A function that refines a generated LinkedIn post.
- * - RefineGeneratedPostInput - The input type for the refineGeneratedPost function.
- * - RefineGeneratedPostOutput - The return type for the refineGeneratedPost function.
- */
-
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { RefineGeneratedPostInputSchema, RefineGeneratedPostOutputSchema, RefineGeneratedPostInput, RefineGeneratedPostOutput } from './refine-post.types';
 
-const RefineGeneratedPostInputSchema = z.object({
-  initialPost: z.string().describe('The initially generated LinkedIn post.'),
-  refinementInstructions: z.string().describe('Instructions on how to refine the post.'),
-});
-export type RefineGeneratedPostInput = z.infer<typeof RefineGeneratedPostInputSchema>;
-
-const RefineGeneratedPostOutputSchema = z.object({
-  refinedPost: z.string().describe('The refined LinkedIn post.'),
-});
-export type RefineGeneratedPostOutput = z.infer<typeof RefineGeneratedPostOutputSchema>;
-
-export async function refineGeneratedPost(input: RefineGeneratedPostInput): Promise<RefineGeneratedPostOutput> {
-  return refineGeneratedPostFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'refineGeneratedPostPrompt',
@@ -52,3 +30,7 @@ const refineGeneratedPostFlow = ai.defineFlow(
     };
   }
 );
+
+export async function refineGeneratedPost(input: RefineGeneratedPostInput): Promise<RefineGeneratedPostOutput> {
+  return refineGeneratedPostFlow(input);
+}
