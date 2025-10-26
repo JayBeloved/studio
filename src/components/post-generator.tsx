@@ -394,6 +394,14 @@ export function PostGenerator() {
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {/* Post Title (if available) */}
+            {generatedPost?.title && (
+              <div>
+                <h3 className="font-semibold text-sm text-muted-foreground mb-1">Title</h3>
+                <p className="text-lg font-bold">{generatedPost.title}</p>
+              </div>
+            )}
+
             {/* Editable Post Content */}
             <div className="relative">
               <Label className="text-base font-semibold mb-2 block">Post Content</Label>
